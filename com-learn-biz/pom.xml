@@ -31,5 +31,35 @@
         <groupId>com.learn</groupId>
         <artifactId>com-learn-dao</artifactId>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.directory.studio/org.apache.commons.codec -->
+    <dependency>
+        <groupId>org.apache.directory.studio</groupId>
+        <artifactId>org.apache.commons.codec</artifactId>
+        <version>1.8</version>
+    </dependency>
+
+    <!--引入aop-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+    <!--引入redis
+    Spring Boot 2.0中spring-boot-starter-data-redis默认使用Lettuce方式替代了Jedis。
+    使用Jedis的话先排除掉Lettuce的依赖，然后手动引入Jedis的依赖
+    -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.lettuce</groupId>
+                    <artifactId>lettuce-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    <dependency>
+        <groupId>redis.clients</groupId>
+        <artifactId>jedis</artifactId>
+    </dependency>
 </dependencies>
 </project>
