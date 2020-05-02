@@ -1,7 +1,10 @@
 package com.learn.controller.aop;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.learn.api.annotation.Resubmit;
+import com.learn.api.dto.request.ResubmitReqDto;
+import com.learn.api.rest.RestResponse;
 import com.learn.biz.utils.Md5Util;
 import com.learn.biz.utils.RedisUtil;
 
@@ -15,8 +18,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 
+/**
+ * 通过aop实现幂等性拦截请求
+ */
 @Aspect
 @Component
 public class ResubmitDataAspect {
@@ -37,13 +44,11 @@ private final  static Logger logger = LoggerFactory.getLogger(ResubmitDataAspect
         Resubmit annotation = method.getAnnotation(Resubmit.class);
         int delaySeconds = annotation.delaySeconds();
         Object[] pointArgs = joinPoint.getArgs();
-        String key = "";
-        //获取第一个参数
+        String key = "";//获取第一个参数
         Object firstParam = pointArgs[0];
-        if (firstParam instanceof Object) {
+        if (firstParam instanceof ResubmitReqDto) {
             //解析参数
-            JSONObject requestDTO = JSONObject.parseObject(firstParam.toString());
-            JSONObject data = JSONObject.parseObject(requestDTO.getString(DATA));
+            JSONObject data = JSONObject.parseObject(JSON.toJSONString(firstParam));
             if (data != null) {
                 StringBuffer sb = new StringBuffer();
                 data.forEach((k, v) -> {
@@ -57,13 +62,13 @@ private final  static Logger logger = LoggerFactory.getLogger(ResubmitDataAspect
         Long lock = 0L;
         try {
             //设置解锁key
-            lock = redisUtil.sSetAndTime(key,delaySeconds, PRESENT);
+            lock = redisUtil.sSetAndTime(key,delaySeconds, new ResubmitReqDto());
             if (lock > 0) {
                 //放行
                 return joinPoint.proceed();
             } else {
                 //响应重复提交异常
-                throw new RuntimeException("重复提交表单!");
+                return new RestResponse<>(RestResponse.DEFAULT_ERR_CODE,"重复提交表单!");
             }
         }catch (Exception e){
             e.printStackTrace();
