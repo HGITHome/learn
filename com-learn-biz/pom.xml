@@ -43,6 +43,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+    <!--引入redis分布式锁-->
+    <dependency>
+        <groupId>org.redisson</groupId>
+        <artifactId>redisson</artifactId>
+    </dependency>
     <!--引入redis
     Spring Boot 2.0中spring-boot-starter-data-redis默认使用Lettuce方式替代了Jedis。
     使用Jedis的话先排除掉Lettuce的依赖，然后手动引入Jedis的依赖
@@ -57,6 +62,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+    <!--引入操作redis api类库-->
     <dependency>
         <groupId>redis.clients</groupId>
         <artifactId>jedis</artifactId>

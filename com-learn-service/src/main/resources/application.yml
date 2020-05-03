@@ -32,7 +32,8 @@ spring:
     # 连接超时时间（毫秒）
   timeout: 1000
 
-
+redisson:
+  address: redis://127.0.0.1:6379
 
   quartz:
     # quartz 相关属性配置
